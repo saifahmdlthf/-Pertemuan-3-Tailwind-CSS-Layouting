@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Praktikum JS & DOM - ARS University</title>
+
+    <style>
+        /* 1. CSS DASAR */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+
+            background-color: #f1f5f9;
+            color: #1e293b;
+
+            transition:
+                background-color 0.4s ease,
+                color 0.4s ease;
+        }
+
+        /* 2. KARTU UTAMA */
+        .card {
+            width: 100%;
+            max-width: 380px;
+            padding: 35px 28px;
+            text-align: center;
+
+            background-color: #ffffff;
+            color: #1e293b;
+
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 15px 40px rgba(15, 23, 42, 0.10);
+
+            transition:
+                background-color 0.4s ease,
+                color 0.4s ease,
+                box-shadow 0.4s ease,
+                border-color 0.4s ease;
+        }
+
+        /* 3. BAGIAN HEADER KARTU */
+        .badge {
+            display: inline-block;
+            padding: 7px 14px;
+            margin-bottom: 20px;
+
+            background-color: #dbeafe;
+            color: #1d4ed8;
+
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .icon-theme {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .description {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        /* 4. TOMBOL INTERAKTIF */
+        button {
+            width: 100%;
+            padding: 13px 18px;
+
+            border: none;
+            border-radius: 10px;
+
+            background-color: #2563eb;
+            color: #ffffff;
+
+            font-size: 14px;
+            font-weight: bold;
+            font-family: inherit;
+
+            cursor: pointer;
+
+            transition:
+                background-color 0.3s ease,
+                transform 0.2s ease,
+                box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:focus-visible {
+            outline: 3px solid #93c5fd;
+            outline-offset: 4px;
+        }
+
+        /* 5. INFORMASI STATUS */
+        .status-info {
+            margin-top: 22px;
+            padding: 12px;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .status-info strong {
+            color: #2563eb;
+        }
+
+        /* 6. MODE GELAP */
+        body.dark-mode {
+            background-color: #111827;
+            color: #f9fafb;
+        }
+
+        body.dark-mode .card {
+            background-color: #1f2937;
+            color: #f9fafb;
+            border-color: #374151;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .badge {
+            background-color: #374151;
+            color: #93c5fd;
+        }
+
+        body.dark-mode .description {
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .status-info {
+            background-color: #111827;
+            color: #cbd5e1;
+        }
+
+        body.dark-mode .status-info strong {
+            color: #93c5fd;
+        }
+
+        body.dark-mode button {
+            background-color: #dc2626;
+        }
+
+        body.dark-mode button:hover {
+            box-shadow: 0 6px 15px rgba(220, 38, 38, 0.25);
+        }
+
+        /* 7. RESPONSIVE */
+        @media (max-width: 400px) {
+            .card {
+                padding: 28px 20px;
+            }
+
+            h2 {
+                font-size: 21px;
+            }
+        }
+    </style>
+</head>
+
+<body id="app-body">
+
+    <!-- KARTU UTAMA -->
+    <main class="card">
+
+        <div class="badge">Valo Indonesia</div>
+
+        <div class="icon-theme" id="theme-icon"
+             aria-hidden="true">☀️</div>
+
+        <h2 id="status-text">Mode Terang Aktif</h2>
+
+        <p class="description">
+            Selamat datang di praktikum JavaScript dan DOM.
+            Klik tombol di bawah untuk mengganti tema tampilan
+            halaman secara dinamis.
+        </p>
+
+        <button id="theme-btn" type="button">
+            🌙 Ubah ke Mode Gelap
+        </button>
+
+        <div class="status-info">
+            Status tema:
+            <strong id="theme-status">Terang</strong>
+            <br><br>
+            Preferensi tema disimpan otomatis di browser.
+        </div>
+
+    </main>
+
+    <script>
+        // 1. SELEKSI ELEMEN DOM
+        const btn = document.querySelector("#theme-btn");
+        const body = document.querySelector("#app-body");
+        const statusText = document.querySelector("#status-text");
+        const themeIcon = document.querySelector("#theme-icon");
+        const themeStatus = document.querySelector("#theme-status");
+
+        // 2. FUNGSI UNTUK MEMPERBARUI TAMPILAN
+        const updateUI = (isDark) => {
+
+            if (isDark) {
+                statusText.innerText = "Mode Gelap Aktif";
+                btn.innerText = "☀️ Ubah ke Mode Terang";
+                themeIcon.innerText = "🌙";
+                themeStatus.innerText = "Gelap";
+            } else {
+                statusText.innerText = "Mode Terang Aktif";
+                btn.innerText = "🌙 Ubah ke Mode Gelap";
+                themeIcon.innerText = "☀️";
+                themeStatus.innerText = "Terang";
+            }
+        };
+
+        // 3. MENANGANI EVENT CLICK
+        btn.addEventListener("click", () => {
+
+            // Ganti class mode pada body
+            body.classList.toggle("dark-mode");
+
+            // Periksa tema yang sedang aktif
+            const isDarkNow =
+                body.classList.contains("dark-mode");
+
+            // 4. SIMPAN PILIHAN KE LOCAL STORAGE
+            localStorage.setItem(
+                "saved-theme",
+                isDarkNow ? "dark" : "light"
+            );
+
+            // 5. PERBARUI TAMPILAN
+            updateUI(isDarkNow);
+        });
+
+        // 6. MEMBACA TEMA SAAT HALAMAN DIMUAT
+        const currentTheme =
+            localStorage.getItem("saved-theme");
+
+        // Pulihkan tema yang tersimpan
+        if (currentTheme === "dark") {
+            body.classList.add("dark-mode");
+            updateUI(true);
+        } else {
+            body.classList.remove("dark-mode");
+            updateUI(false);
+        }
+    </script>
+
+</body>
+</html>
